@@ -25,44 +25,9 @@ library(gifski) # renders animations as GIF files
 
 ###...........................................................................###
 
-#Loading the original dataset
-df <- read.csv("C:/Users/ishiv/Downloads/shopping_dataset/shopping_behavior_updated (1).csv")
+shopping <- read.csv("shopping_behavior_with_timestamp.csv", stringsAsFactors = FALSE)
 
-names(df) <- make.names(names(df))
-
-# I wrote this function to generate a date for each row based on its season
-
-get_date <- function(season) {
-  year_val <- 2023
-  # Here I mapped each season to the months that belong to it
-  months <- switch(season,
-                   "Winter" = c(12, 1, 2),
-                   "Spring" = c(3, 4, 5),
-                   "Summer" = c(6, 7, 8),
-                   "Fall"   = c(9, 10, 11))
-  selected_month <- sample(months, 1)
-  selected_day <- sample(1:28, 1)
-  return(as.Date(paste(year_val, selected_month, selected_day, sep = "-")))
-}
-
-# Setting the seed to 42 for date to be reproducible
-set.seed(42)
-# Applying this function to every row  do.call(c, ...) keeps the output as dates
-df$Purchase_Date <- do.call(c, lapply(df$Season, get_date))
-
-
-head(df[, c("Customer.ID", "Season", "Purchase_Date")])
-
-#saving everything as a new CSV file
-write.csv(df, "shopping_behavior_with_timestamp_reproducible.csv", row.names = FALSE)
-
-###..........................................................................###
-colnames(df)[17] <- "Purchase.Date"
-
-
-shopping <- read.csv("C:/Users/ishiv/Downloads/synthesized_shopping_dataset/shopping_behavior_with_timestamp.csv", stringsAsFactors = FALSE)
-
-shopping$Purchase.Date <- as.Date(shopping$Purchase.Date, format = "%m/%d/%Y")
+shopping$Purchase_Date <- as.Date(shopping$Purchase_Date, format = "%m/%d/%Y")
 
 shopping$Season <- factor(trimws(shopping$Season), levels = c("Spring", "Summer", "Fall", "Winter"))
 
